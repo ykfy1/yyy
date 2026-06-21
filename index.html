@@ -158,25 +158,25 @@
                     <i class="fas fa-search"></i>
                     <span>搜索</span>
                 </button>
-                <div class="search-results-toolbar">
-                    <div class="import-dropdown">
-                        <button class="import-selected-btn" id="importSelectedBtn" disabled>
-                            <i class="fas fa-file-import"></i>
-                            <span>导入已选</span>
-                            <span id="importSelectedCount" class="import-selected-count"></span>
-                            <i class="fas fa-chevron-down import-dropdown-caret"></i>
-                        </button>
-                        <div class="import-dropdown-menu" id="importSelectedMenu" hidden>
-                            <button class="import-dropdown-item" id="importToPlaylist" data-action="playlist">导入到播放列表</button>
-                            <button class="import-dropdown-item" id="importToFavorites" data-action="favorites">导入到收藏列表</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div id="searchResults" class="search-results">
-                <div id="searchResultsList" class="search-results-list"></div>
-            </div>
+                <div class="search-results-toolbar" style="display:flex;align-items:center;gap:12px;">
+    <!-- 新增全选复选框 -->
+    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+        <input type="checkbox" id="selectAllCheckbox">
+        <span>全选</span>
+    </label>
+    <div class="import-dropdown">
+        <button class="import-selected-btn" id="importSelectedBtn" disabled>
+            <i class="fas fa-file-import"></i>
+            <span>导入已选</span>
+            <span id="importSelectedCount" class="import-selected-count"></span>
+            <i class="fas fa-chevron-down import-dropdown-caret"></i>
+        </button>
+        <div class="import-dropdown-menu" id="importSelectedMenu" hidden>
+            <button class="import-dropdown-item" id="importToPlaylist" data-action="playlist">导入到播放列表</button>
+            <button class="import-dropdown-item" id="importToFavorites" data-action="favorites">导入到收藏列表</button>
         </div>
+    </div>
+</div>
 
         <div class="main-content">
             <div class="cover-area">
@@ -547,5 +547,52 @@
         document.body.appendChild(mobileScript);
     }
 </script>
+<script>
+// 全选功能
+const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+const searchResultsList = document.getElementById('searchResultsList');
+
+// 点击全选框，批量切换所有歌曲勾选
+selectAllCheckbox.addEventListener('change', function () {
+    const songBoxes = searchResultsList.querySelectorAll('.song-checkbox');
+    songBoxes.forEach(item => item.checked = this.checked);
+    refreshImportState();
+});
+
+// 手动点单曲，同步全选框状态
+searchResultsList.addEventListener('change', function (e) {
+    if (e.target.classList.contains('song-checkbox')) {
+        const allBox = Array.from(searchResultsList.querySelectorAll('.song-checkbox'));
+        const allChecked = allBox.every(el => el.checked);
+        selectAllCheckbox.checked = allChecked;
+        refreshImportState();
+    }
+});
+
+// 更新导入按钮禁用状态与选中数量
+function refreshImportState() {
+    const checkedItems = searchResultsList.querySelectorAll('.song-checkbox:checked');
+    const importBtn = document.getElementById('importSelectedBtn');
+    const countText = document.getElementById('importSelectedCount');
+    if (checkedItems.length > 0) {
+        importBtn.disabled = false;
+        countText.textContent = `(${checkedItems.length})`;
+    } else {
+        importBtn.disabled = true;
+        countText.textContent = '';
+        selectAllCheckbox.checked = false;
+    }
+}
+
+// 点击搜索/回车搜索，清空勾选
+const searchBtn = document.getElementById('searchBtn');
+const searchInput = document.getElementById('searchInput');
+function resetSelectStatus() {
+    selectAllCheckbox.checked = false;
+    refreshImportState();
+}
+searchBtn.addEventListener('click', resetSelectStatus);
+searchInput.addEventListener('keydown', e => e.key === 'Enter' && resetSelectStatus());
+</script>            
 </body>
 </html>
