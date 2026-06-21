@@ -1033,13 +1033,6 @@ async function bootstrapPersistentStorage() {
         console.warn("加载远程存储失败", error);
     } finally {
         remoteSyncEnabled = true;
-        // 云端加载完成后初始化设置面板
-  if (document.readyState === "complete") {
-    initSettings();
-  } else {
-    document.addEventListener("DOMContentLoaded", initSettings);
-  }
-}
     }
 }
 
@@ -1221,7 +1214,10 @@ function applyPersistentSnapshotFromRemote(data) {
     updateMobileClearPlaylistVisibility();
 }
 
-bootstrapPersistentStorage();
+document.addEventListener("DOMContentLoaded", async () => {
+  await bootstrapPersistentStorage();
+  initSettings();
+});
 
 // ==== Media Session integration (Safari/iOS Lock Screen) ====
 (() => {
