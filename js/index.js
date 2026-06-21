@@ -1216,7 +1216,10 @@ function applyPersistentSnapshotFromRemote(data) {
 
 document.addEventListener("DOMContentLoaded", async () => {
   await bootstrapPersistentStorage();
-  initSettings();
+  // 再额外延迟200ms，保证所有DOM、第三方组件渲染完毕
+  setTimeout(() => {
+    initSettings();
+  }, 200);
 });
 
 // ==== Media Session integration (Safari/iOS Lock Screen) ====
