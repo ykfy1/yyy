@@ -1034,7 +1034,12 @@ async function bootstrapPersistentStorage() {
     } finally {
         remoteSyncEnabled = true;
         // 云端加载完成后初始化设置面板
-        initSettings();
+  if (document.readyState === "complete") {
+    initSettings();
+  } else {
+    document.addEventListener("DOMContentLoaded", initSettings);
+  }
+}
     }
 }
 
