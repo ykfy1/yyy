@@ -1033,6 +1033,8 @@ async function bootstrapPersistentStorage() {
         console.warn("加载远程存储失败", error);
     } finally {
         remoteSyncEnabled = true;
+        // 云端加载完成后初始化设置面板
+        initSettings();
     }
 }
 
@@ -6509,10 +6511,3 @@ function applySettingsToUI() {
         initSettings();
     };
 })();
-
-// 如果页面没有启用云同步，也要初始化设置
-document.addEventListener("DOMContentLoaded", () => {
-    if (!remoteSyncEnabled) {
-        initSettings();
-    }
-});
