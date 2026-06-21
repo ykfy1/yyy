@@ -6503,18 +6503,3 @@ function applySettingsToUI() {
     });
 }
 
-(function() {
-  const originalBootstrap = bootstrapPersistentStorage;
-  bootstrapPersistentStorage = async function() {
-    await originalBootstrap();
-    // 等页面DOM完全渲染再初始化，避免UI错乱
-    function delayInit() {
-      if (document.readyState === "complete") {
-        initSettings();
-      } else {
-        document.addEventListener("DOMContentLoaded", initSettings);
-      }
-    }
-    delayInit();
-  };
-})();
